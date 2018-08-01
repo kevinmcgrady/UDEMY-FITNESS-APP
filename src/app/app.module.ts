@@ -2,7 +2,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { FormsModule } from '@angular/forms';
+// Css packages.
+import { FlexLayoutModule } from '@angular/flex-layout';
 // Material Module.
 import { MaterialModule } from './material.module';
 
@@ -34,8 +36,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     MaterialModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FlexLayoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]
