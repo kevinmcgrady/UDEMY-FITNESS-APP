@@ -6,7 +6,7 @@
         <mat-form-field fxLayoutAlign="center">
           <mat-select placeholder="Select a Workout" ngModel name="exercise" required>
             <!-- use the async pipe to auto subscribe to the exercises observable -->
-            <mat-option *ngFor="let exercise of exercises | async" [value]="exercise.name">
+            <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
               {{ exercise.name }}
             </mat-option>
           </mat-select>

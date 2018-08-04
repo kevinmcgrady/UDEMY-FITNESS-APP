@@ -1,30 +1,45 @@
 import { Injectable } from '@angular/core';
 import { Exercise } from './exercise.model';
 import { Subject } from 'rxjs/subject';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TrainingService {
   // list of exercises.
-  private availableExercises: Exercise[] = [
-    { id: 'crunches', name: 'Crunches', duration: 30, calories: 8 },
-    { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 15 },
-    { id: 'side-lunges', name: 'Side lunges', duration: 120, calories: 18 },
-    { id: 'burpees', name: 'Burpees', duration: 60, calories: 8 }
-  ];
-
+  private availableExercises: Exercise[] = [];
   // property to store the running exercise.
   private runningExercise: Exercise;
   // propety to store a subject when the exercise has changed.
   exerciseChanged = new Subject<Exercise>();
-  // property to store the incompleted exercises.
-  private exercises: Exercise[] = [];
+  // a new subject to push the exercises.
+  exercisesChanged = new Subject<Exercise[]>();
+  // a subject to store the finished exercises
+  finishedExercisesChanged = new Subject<Exercise[]>();
 
-  constructor() { }
+  constructor(private db: AngularFirestore) { }
 
   // method to get the exercises
-  getExercises() {
+  fetchExercises() {
     // return a new array of the availableExercises.
-    return this.availableExercises.slice();
+    this.db.collection<Exercise>('avaliableExercises')
+    .snapshotChanges()
+    .pipe(map(docArray => {
+      return docArray.map(doc => {
+        // return a object with the id and the rest of the data (name, duration ... ).
+        return {
+          id: doc.payload.doc.id,
+          name: doc.payload.doc.data().name,
+          duration: doc.payload.doc.data().duration,
+          calories: doc.payload.doc.data().calories
+        }
+      })
+    })).subscribe((exersices: Exercise[]) => {
+      // save the exercises to the property.
+      this.availableExercises = exersices;
+      // push the a copy of the exercises to the subject.
+      this.exercisesChanged.next([...this.availableExercises]);
+    })
   }
 
   // method to start the exercise.
@@ -41,7 +56,7 @@ export class TrainingService {
   completeExercise() {
     // add the completed exercise to the array.
     // send a copy of the runningExercise with the aditional properties, date and state.
-    this.exercises.push({...this.runningExercise, date: new Date(), state: 'completed'});
+    this.addDataToDatabase({...this.runningExercise, date: new Date(), state: 'completed'});
     // set the runningExercise to null.
     this.runningExercise = null;
     // pass null to the subject.
@@ -52,7 +67,7 @@ export class TrainingService {
   cancelExercise(progress: number) {
     // add the completed exercise to the array.
     // send a copy of the runningExercise with the aditional properties, date and state.
-    this.exercises.push({...this.runningExercise, duration: this.runningExercise.duration * (progress / 100) ,calories: this.runningExercise.calories * (progress / 100), date: new Date(), state: 'cancelled'});
+    this.addDataToDatabase({...this.runningExercise, duration: this.runningExercise.duration * (progress / 100) ,calories: this.runningExercise.calories * (progress / 100), date: new Date(), state: 'cancelled'});
     // set the runningExercise to null.
     this.runningExercise = null;
     // pass null to the subject.
@@ -66,8 +81,17 @@ export class TrainingService {
   }
 
   // method to get all the past exercises.
-  getCompletedOrCancelledExercises() {
-    // return a copy of the exercices.
-    return this.exercises.slice();
+  fetchCompletedOrCancelledExercises() {
+    // get the finished exercises from the database.
+    this.db.collection('finishedExercises').valueChanges().subscribe((exercises: Exercise[]) => {
+      // pass them to the finishedExercises subject.
+      this.finishedExercisesChanged.next(exercises);
+    });
+  }
+
+  // method to add to the database.
+  private addDataToDatabase(exercise: Exercise) {
+    // make a call to the database and store the exercise.
+    this.db.collection('finishedExercises').add(exercise);
   }
 }

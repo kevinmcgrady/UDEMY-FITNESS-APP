@@ -1,24 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
-import { AngularFirestore } from 'angularfire2/firestore';
 import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit {
+export class NewTrainingComponent implements OnInit, OnDestroy {
   // property to store the exersices.
-  exercises: Observable<any>;
+  exercises: Exercise[];
+  // property to store the subscription.
+  exercisesSub: Subscription;
 
-  constructor(private trainingService: TrainingService, private db: AngularFirestore) { }
+  constructor(private trainingService: TrainingService) { }
 
   ngOnInit() {
-    // store the data from the database.
-    this.exercises = this.db.collection('avaliableExercises').valueChanges();
+    // set the results from the database to the exercises property.
+    this.exercisesSub = this.trainingService.exercisesChanged.subscribe(exercises => {
+      this.exercises = exercises;
+    });
+    // fetch the exercises from the database.
+    this.trainingService.fetchExercises();
   }
 
   // this method will be called when the start new training button is clicked.
@@ -26,4 +32,10 @@ export class NewTrainingComponent implements OnInit {
     // call the startExercise method on the trainingService and pass in the exercise value on the form
     this.trainingService.startExercise(form.value.exercise);
   }
+
+  // this method will be called when the component is no longer in use.
+  ngOnDestroy() {
+  // unsubscribe from the subscription.
+  this.exercisesSub.unsubscribe();
+}
 }
