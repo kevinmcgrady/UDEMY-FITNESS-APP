@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { Subject } from 'rxjs/Subject';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +11,7 @@ export class AuthService {
   // a subject to store if the user is logged in or not.
   authChange = new Subject<boolean>();
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   // method to register a new user.
   registerUser(authData: AuthData) {
@@ -18,8 +19,8 @@ export class AuthService {
       email: authData.email,
       userId: Math.round(Math.random() * 10000).toString()
     }
-    // send true to the subject.
-    this.authChange.next(true);
+    // call the authSuccess method.
+    this.authSuccess();
   }
 
   // method to log the user in.
@@ -28,8 +29,8 @@ export class AuthService {
       email: authData.email,
       userId: Math.round(Math.random() * 10000).toString()
     }
-    // send true to the subject.
-    this.authChange.next(true);
+    // call the authSuccess method.
+    this.authSuccess();
   }
 
   // method to log the user out.
@@ -37,6 +38,8 @@ export class AuthService {
     this.user = null;
     // send false to the subject.
     this.authChange.next(false);
+    // navigate the user to the training page.
+    this.router.navigate(['/login']);
   }
 
   // method to return the user.
@@ -49,5 +52,13 @@ export class AuthService {
   // method to check if the user is logged in.
   isAuth() {
     return this.user != null;
+  }
+
+  // method called when the auth was successful.
+  private authSuccess() {
+    // send true to the subject.
+    this.authChange.next(true);
+    // navigate the user to the training page.
+    this.router.navigate(['/training']);
   }
 }

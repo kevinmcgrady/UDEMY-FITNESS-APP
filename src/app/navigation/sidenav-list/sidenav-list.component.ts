@@ -37,4 +37,11 @@ export class SidenavListComponent implements OnInit, OnDestroy {
     this.authSub.unsubscribe();
   }
 
+  // method to log the user out.
+  onLogout() {
+    // close the sidenav
+    this.onClose();
+    // call the logout method on the auth service.
+    this.authService.logout();
+  }
 }

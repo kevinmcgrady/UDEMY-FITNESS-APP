@@ -31,6 +31,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sideNavToggle.emit();
   }
 
+  // method to log the user out.
+  onLogout() {
+    // call the logout method in the auth service.
+    this.authService.logout();
+  }
+
   // this method is called when the component is no longer in use.
   ngOnDestroy() {
     // unsubscribe from the observable.
