@@ -29,4 +29,10 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
+  // this method will be called when a user types in the filter field.
+  doFilter(filterValue: string) {
+    // set the filter peoperty of the dataSource to the value the user entered.
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
 }
