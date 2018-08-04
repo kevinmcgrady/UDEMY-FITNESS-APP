@@ -1,16 +1,28 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { AuthService } from '../../auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   // new event emitter to make the navigation close and open.
   @Output() sideNavToggle = new EventEmitter<void>();
-  constructor() { }
+  // property to store if the user is logged in or not.
+  isAuth: boolean;
+  // property to store the subscription.
+  authSub: Subscription;
+
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
+    // subscribe to the auth change subject.
+    this.authSub = this.authService.authChange.subscribe((authStatus) => {
+      // set the isAuth to the returned authStatus.
+      this.isAuth = authStatus;
+    })
   }
 
   // this method is called when the button is clicked.
@@ -19,4 +31,9 @@ export class HeaderComponent implements OnInit {
     this.sideNavToggle.emit();
   }
 
+  // this method is called when the component is no longer in use.
+  ngOnDestroy() {
+    // unsubscribe from the observable.
+    this.authSub.unsubscribe();
+  }
 }

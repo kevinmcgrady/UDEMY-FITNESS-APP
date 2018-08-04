@@ -3,13 +3,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+
 // Css packages.
 import { FlexLayoutModule } from '@angular/flex-layout';
+
 // Material Module.
 import { MaterialModule } from './material.module';
 
 // Routes
 import { AppRoutingModule } from './app.routing.module';
+
+// Services.
+import { AuthService } from './auth/auth.service';
 
 // components.
 import { AppComponent } from './app.component';
@@ -46,7 +51,7 @@ import { StopTrainingComponent } from './training/stop-training.component';
     AppRoutingModule,
     FlexLayoutModule
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent],
   entryComponents: [StopTrainingComponent]
 })
