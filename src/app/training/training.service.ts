@@ -34,7 +34,7 @@ export class TrainingService {
     // store the exercise.
     this.runningExercise = selectedExercise;
     // send a copy of the running exercise to the subject.
-    this.exerciseChanged.next({... this.runningExercise});
+    this.exerciseChanged.next({...this.runningExercise});
   }
 
   // metod called when a exercise is completed.
@@ -52,7 +52,7 @@ export class TrainingService {
   cancelExercise(progress: number) {
     // add the completed exercise to the array.
     // send a copy of the runningExercise with the aditional properties, date and state.
-    this.exercises.push({...this.runningExercise, duration: this.runningExercise.duration * (progress / 100) ,calories: this.runningExercise.duration * (progress / 100), date: new Date(), state: 'cancelled'});
+    this.exercises.push({...this.runningExercise, duration: this.runningExercise.duration * (progress / 100) ,calories: this.runningExercise.calories * (progress / 100), date: new Date(), state: 'cancelled'});
     // set the runningExercise to null.
     this.runningExercise = null;
     // pass null to the subject.
@@ -63,5 +63,11 @@ export class TrainingService {
   getRunningExercise() {
     // return a copy of the runningExercise
     return { ...this.runningExercise};
+  }
+
+  // method to get all the past exercises.
+  getCompletedOrCancelledExercises() {
+    // return a copy of the exercices.
+    return this.exercises.slice();
   }
 }
