@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { Exercise } from '../exercise.model';
 import { TrainingService } from '../training.service';
 
@@ -16,6 +16,8 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Exercise>();
   // get the matsort from the view templete on the table.
   @ViewChild(MatSort) sort: MatSort;
+  // get the MatPaginator from the view templete.
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private trainingService: TrainingService) { }
 
@@ -27,6 +29,8 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
   // this method will be called after the view has finished loading.
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    // assign the paginator to the paginator propety on the dataSource.
+    this.dataSource.paginator = this.paginator;
   }
 
   // this method will be called when a user types in the filter field.

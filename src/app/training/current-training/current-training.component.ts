@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { StopTrainingComponent } from '../stop-training.component';
 import { TrainingService } from '../training.service';
@@ -8,7 +8,7 @@ import { TrainingService } from '../training.service';
   templateUrl: './current-training.component.html',
   styleUrls: ['./current-training.component.css']
 })
-export class CurrentTrainingComponent implements OnInit, OnDestroy {
+export class CurrentTrainingComponent implements OnInit {
   // property to store the current progress.
   progress = 0;
   // property to store the timer.
@@ -34,9 +34,9 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
       this.progress = this.progress + 1;
       // if the number is greater or equal to 100 (%)
       if(this.progress >= 100) {
+        this.trainingService.completeExercise();
         // stop the timer.
         clearInterval(this.timer);
-        this.trainingService.completeExercise();
       }
     }, step)
   }
@@ -55,17 +55,10 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
       if(result) {
         // call the trainingService cancelExercise method and pass in the current progress.
         this.trainingService.cancelExercise(this.progress);
+      } else {
+        // call the method to resume the timer.
+        this.startOrResumeTimer();
       }
-      // call the method to resume the timer.
-      this.startOrResumeTimer();
     })
-  }
-
-  // stop the timer when the component is no longer in use.
-  ngOnDestroy() {
-    if(this.progress != 100) {
-      clearInterval(this.timer);
-      this.progress = 0;
-    }
   }
 }
