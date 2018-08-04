@@ -3,62 +3,69 @@ import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { Subject } from 'rxjs/Subject';
 import { Router } from '@angular/router';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { TrainingService } from '../training/training.service';
 
 @Injectable()
 export class AuthService {
-  // property to store the user.
-  private user: User;
+  // property to store if the user is logged in.
+  private isAuthenticated: boolean = false;
   // a subject to store if the user is logged in or not.
   authChange = new Subject<boolean>();
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private afAuth: AngularFireAuth, private trainingService: TrainingService) { }
+
+  // this method will be called whenever a user auth changes.
+  initAuthListener() {
+    this.afAuth.authState.subscribe(user => {
+      // if a user exists.
+      if(user) {
+        // set isAuthenticated to true.
+        this.isAuthenticated = true;
+        // send true to the subject.
+        this.authChange.next(true);
+        // navigate the user to the training page.
+        this.router.navigate(['/training']);
+      } else {
+        // cancel the database subs.
+        this.trainingService.cancelSubscriptions();
+        // send false to the subject.
+        this.authChange.next(false);
+        // set isAuthenticated to false.
+        this.isAuthenticated = false;
+        // navigate the user to the training page.
+        this.router.navigate(['/login']);
+      }
+    })
+  }
 
   // method to register a new user.
   registerUser(authData: AuthData) {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 10000).toString()
-    }
-    // call the authSuccess method.
-    this.authSuccess();
+    this.afAuth.auth.createUserWithEmailAndPassword(authData.email, authData.password).then((result) => {
+      console.log('user registered!');
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   // method to log the user in.
   login(authData: AuthData) {
-    this.user = {
-      email: authData.email,
-      userId: Math.round(Math.random() * 10000).toString()
-    }
-    // call the authSuccess method.
-    this.authSuccess();
+    this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password).then((result) => {
+      console.log('logged in');
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   // method to log the user out.
   logout() {
-    this.user = null;
-    // send false to the subject.
-    this.authChange.next(false);
-    // navigate the user to the training page.
-    this.router.navigate(['/login']);
-  }
-
-  // method to return the user.
-  getUser() {
-    // return a copy of the user in a object.
-    // this way other parts of the app can't change the original user.
-    return { ...this.user };
+    // call the signout method on the AngularFireAuth.
+    this.afAuth.auth.signOut();
   }
 
   // method to check if the user is logged in.
   isAuth() {
-    return this.user != null;
-  }
-
-  // method called when the auth was successful.
-  private authSuccess() {
-    // send true to the subject.
-    this.authChange.next(true);
-    // navigate the user to the training page.
-    this.router.navigate(['/training']);
+    // return the isAuthenticated (true or false).
+    return this.isAuthenticated;
   }
 }
