@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./training.component.css']
 })
 export class TrainingComponent implements OnInit {
+  // boolean to store if a training session is active.
+  ongoingTraining: boolean = false;
 
   constructor() { }
 
