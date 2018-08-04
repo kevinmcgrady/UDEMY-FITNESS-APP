@@ -17,6 +17,10 @@ import { AppRoutingModule } from './app.routing.module';
 import { AuthService } from './auth/auth.service';
 import { TrainingService } from './training/training.service';
 
+//Angular Fire
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { environment } from '../environments/environment';
 
 // components.
 import { AppComponent } from './app.component';
@@ -51,7 +55,9 @@ import { StopTrainingComponent } from './training/stop-training.component';
     FormsModule,
     MaterialModule,
     AppRoutingModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule
   ],
   providers: [AuthService, TrainingService],
   bootstrap: [AppComponent],
