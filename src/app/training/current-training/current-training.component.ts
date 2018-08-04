@@ -1,6 +1,7 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { StopTrainingComponent } from '../stop-training.component';
+import { TrainingService } from '../training.service';
 
 @Component({
   selector: 'app-current-training',
@@ -14,10 +15,9 @@ export class CurrentTrainingComponent implements OnInit {
   timer: number;
   // property to store the message.
   message: string = 'Keep Going, You can do it!';
-  // event emitter to stop the current training.
-  @Output() trainingExit = new EventEmitter();
-  // inject the MatDialog class.
-  constructor(private dialog: MatDialog) { }
+
+  // inject the MatDialog class and the training service.
+  constructor(private dialog: MatDialog, private trainingService: TrainingService) { }
 
   ngOnInit() {
     // call the method to start the timer.
@@ -26,18 +26,21 @@ export class CurrentTrainingComponent implements OnInit {
 
   // this method will start or resume the timer.
   startOrResumeTimer() {
+    // get the duration of the current exercise in milliseconds.
+    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
     // a timer to increment the progress spinner.
     this.timer = setInterval(() => {
       // increment the progress spinner.
-      this.progress = this.progress + 20;
+      this.progress = this.progress + 1;
       // if the number is greater or equal to 100 (%)
       if(this.progress >= 100) {
+        this.trainingService.completeExercise();
         // stop the timer.
         clearInterval(this.timer);
         // change the message.
         this.message = "Well Done!, You Finished!!";
       }
-    }, 1000)
+    }, step)
   }
 
   // this method will be called when the stop button is clicked.
@@ -52,8 +55,8 @@ export class CurrentTrainingComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       // if the result is true (the user wants to stop the training.)
       if(result) {
-        // emit the trainingExit event.
-        this.trainingExit.emit();
+        // call the trainingService cancelExercise method and pass in the current progress.
+        this.trainingService.cancelExercise(this.progress);
       }
       // call the method to resume the timer.
       this.startOrResumeTimer();

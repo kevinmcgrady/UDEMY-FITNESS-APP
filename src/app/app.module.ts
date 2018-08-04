@@ -15,6 +15,8 @@ import { AppRoutingModule } from './app.routing.module';
 
 // Services.
 import { AuthService } from './auth/auth.service';
+import { TrainingService } from './training/training.service';
+
 
 // components.
 import { AppComponent } from './app.component';
@@ -51,7 +53,7 @@ import { StopTrainingComponent } from './training/stop-training.component';
     AppRoutingModule,
     FlexLayoutModule
   ],
-  providers: [AuthService],
+  providers: [AuthService, TrainingService],
   bootstrap: [AppComponent],
   entryComponents: [StopTrainingComponent]
 })
