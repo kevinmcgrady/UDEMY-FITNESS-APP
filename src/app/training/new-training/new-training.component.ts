@@ -4,6 +4,8 @@ import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
+import { UIService } from '../../shared/ui.service';
+
 
 @Component({
   selector: 'app-new-training',
@@ -15,10 +17,20 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   exercises: Exercise[];
   // property to store the subscription.
   exercisesSub: Subscription;
+  // store the loading state of the spinner.
+  isLoading: boolean = true;
+  // store the subscription.
+  isLoadingSub: Subscription;
 
-  constructor(private trainingService: TrainingService) { }
+  constructor(private trainingService: TrainingService, private uiService: UIService) { }
 
   ngOnInit() {
+    // subscribe to the loading state.
+    this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
+      // set the property to the value.
+      this.isLoading = isLoadingState;
+    });
+
     // set the results from the database to the exercises property.
     this.exercisesSub = this.trainingService.exercisesChanged.subscribe(exercises => {
       this.exercises = exercises;
@@ -37,5 +49,7 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   // unsubscribe from the subscription.
   this.exercisesSub.unsubscribe();
-}
+  // unsubscribe.
+  this.isLoadingSub.unsubscribe();
+  }
 }

@@ -5,3 +5,7 @@ section.new-training {
 form {
   width: 90%;
 }
+
+mat-spinner {
+  margin: 0 auto;
+}

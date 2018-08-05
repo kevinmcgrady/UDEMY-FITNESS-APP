@@ -16,6 +16,7 @@ import { AppRoutingModule } from './app.routing.module';
 // Services.
 import { AuthService } from './auth/auth.service';
 import { TrainingService } from './training/training.service';
+import { UIService } from './shared/ui.service';
 
 //Angular Fire
 import { AngularFireModule } from 'angularfire2';
@@ -61,7 +62,7 @@ import { StopTrainingComponent } from './training/stop-training.component';
     AngularFirestoreModule,
     AngularFireAuthModule
   ],
-  providers: [AuthService, TrainingService],
+  providers: [AuthService, TrainingService, UIService],
   bootstrap: [AppComponent],
   entryComponents: [StopTrainingComponent]
 })
