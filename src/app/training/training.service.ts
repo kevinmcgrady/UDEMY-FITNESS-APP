@@ -49,6 +49,13 @@ export class TrainingService {
       this.availableExercises = exersices;
       // push the a copy of the exercises to the subject.
       this.exercisesChanged.next([...this.availableExercises]);
+    }, (error) => {
+      // set loading to false.
+      this.uiService.loadingStateChanged.next(false);
+      // if there is an error, show the snackbar.
+      this.uiService.showSnackBar('Fetching Exercises Failed', 'ERROR', 3000);
+      // push null to the exercisesChanged.
+      this.exercisesChanged.next(null);
     }))
   }
 

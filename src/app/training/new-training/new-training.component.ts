@@ -36,13 +36,19 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
       this.exercises = exercises;
     });
     // fetch the exercises from the database.
-    this.trainingService.fetchExercises();
+    this.fetchExercises();
   }
 
   // this method will be called when the start new training button is clicked.
   onStartTraining(form: NgForm) {
     // call the startExercise method on the trainingService and pass in the exercise value on the form
     this.trainingService.startExercise(form.value.exercise);
+  }
+
+  // method to fetch the exercises.
+  fetchExercises() {
+    // fetch the exercises from the database.
+    this.trainingService.fetchExercises();
   }
 
   // this method will be called when the component is no longer in use.
