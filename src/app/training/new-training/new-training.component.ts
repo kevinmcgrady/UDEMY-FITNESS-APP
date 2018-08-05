@@ -26,7 +26,7 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // subscribe to the loading state.
-    this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
+    this.isLoadingSub = this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
       // set the property to the value.
       this.isLoading = isLoadingState;
     });

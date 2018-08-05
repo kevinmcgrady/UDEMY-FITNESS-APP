@@ -52,9 +52,7 @@ export class AuthService {
       // stop the loading when the user has created an account.
       this.uiService.loadingStateChanged.next(false);
       // open a snackbar and display the error message.
-      this.snackbar.open(error.message, 'ERROR', {
-        duration: 3000
-      });
+      this.uiService.showSnackBar(error.message, 'ERROR', 3000);
     })
   }
 
@@ -69,9 +67,7 @@ export class AuthService {
       // stop the loading when the user has an error.
       this.uiService.loadingStateChanged.next(false);
       // open the snackbar and display the message.
-      this.snackbar.open(error.message, 'ERROR', {
-        duration: 3000
-      });
+      this.uiService.showSnackBar(error.message, 'ERROR', 3000);
     })
   }
 
